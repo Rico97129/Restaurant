@@ -83,13 +83,11 @@ switch($action)
             }
             include("Vues/panier.php");
             break;
+            case 'Favoris':
+               
+                include("Vues/favoris.php");
+                break;
         }        
 
    
         include("Includes/Pied.php");
-      
-?>
-
-
-
-
