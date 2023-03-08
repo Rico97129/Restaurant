@@ -36,11 +36,13 @@
                     <label for="quantite">Quantité:</label>
                     <input type="number" name="quantite" value="<?= $item['quantite'] ?>" min="1" max="10">
                     <input type="submit" value="Modifier">
-                    <form action="index.php?action=supprimerDuPanier" method="post">
+                  
         
                 </form>
-                <input type="hidden" name="key" value="<?= $key ?>">
+                <form action="index.php?action=supprimerDuPanier" method="post">
+        <input type="hidden" name="key" value="<?= $key ?>">
         <button type="submit">Supprimer</button>
+        </form>
             </div>
             <?php endif; ?>
         <?php endif; ?>

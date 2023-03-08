@@ -112,7 +112,7 @@ public function setDescription($description) {
      * @param Menu $menu L'objet Menu à mettre à jour
      * @return bool True si la mise à jour a réussi, false sinon
      */
-    public static function updateMenu(Menu $menu) {
+    public static function updateMenu($menu) {
         try {
             $pdo = PdoMusic::getMonPdo();
 

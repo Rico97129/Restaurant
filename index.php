@@ -49,25 +49,34 @@ switch($action)
         include("Vues/boissons.php");
       
         break;
-        case 'ajouterAuPanier':
-            require("Model/panier.php");
-            
         
+        case 'ajouterAuPanier':
             // check if the 'panier' session variable exists, if not create it as an empty array
             if (!isset($_SESSION['panier'])) {
                 $_SESSION['panier'] = array();
             }
         
-            // check if the action is to add a menu to the panier
-            if (isset($_GET['action']) && $_GET['action'] == 'ajouterAuPanier' && isset($_GET['menuid'])) {
-                // get the menu ID from the GET parameter
-                $menuid = $_GET['menuid'];
+            // check if the action is to add an item to the panier
+            if (isset($_GET['action']) && $_GET['action'] == 'ajouterAuPanier') {
+                // check if a menu ID or drink ID is provided
+                if (isset($_GET['menuid'])) {
+                    // get the menu ID from the GET parameter
+                    $id = $_GET['menuid'];
+                    $type = 'menu';
+                } elseif (isset($_GET['boissonid'])) {
+                    // get the drink ID from the GET parameter
+                    $id = $_GET['boissonid'];
+                    $type = 'boisson';
+                } else {
+                    // no valid item ID is provided, do nothing and exit
+                    break;
+                }
         
-                // check if the menu is already in the panier
+                // check if the item is already in the panier
                 $found = false;
                 foreach ($_SESSION['panier'] as &$item) {
-                    if ($item['type'] == 'menu' && $item['id'] == $menuid) {
-                        // increase the quantity of the existing menu in the panier
+                    if ($item['type'] == $type && $item['id'] == $id) {
+                        // increase the quantity of the existing item in the panier
                         $item['quantite'] += 1;
                         $found = true;
                         break;
@@ -75,45 +84,17 @@ switch($action)
                 }
                 unset($item); // unset the reference to the last element
         
-                // if the menu is not already in the panier, add it as a new entry
+                // if the item is not already in the panier, add it as a new entry
                 if (!$found) {
                     $_SESSION['panier'][] = array(
-                        'type' => 'menu',
-                        'id' => $menuid,
+                        'type' => $type,
+                        'id' => $id,
                         'quantite' => 1
                     );
                 }
-            }
-        
-            // check if the action is to add a drink to the panier
-            if (isset($_GET['action']) && $_GET['action'] == 'ajouterAuPanier' && isset($_GET['boissonid'])) {
-                // get the drink ID from the GET parameter
-                $boissonid = $_GET['boissonid'];
-        
-                // check if the drink is already in the panier
-                $found = false;
-                foreach ($_SESSION['panier'] as &$item) {
-                    if ($item['type'] == 'boisson' && $item['id'] == $boissonid) {
-                        // increase the quantity of the existing drink in the panier
-                        $item['quantite'] += 1;
-                        $found = true;
-                        break;
-                    }
-                }
-                unset($item); // unset the reference to the last element
-        
-                // if the drink is not already in the panier, add it as a new entry
-                if (!$found) {
-                    $_SESSION['panier'][] = array(
-                        'type' => 'boisson',
-                        'id' => $boissonid,
-                        'quantite' => 1
-                    );
-                }
-            }
-        
-           
+            }   
             break;
+        
         
         
         
