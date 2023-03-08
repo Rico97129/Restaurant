@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(50) NOT NULL,
   `prenom` varchar(50) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL UNIQUE,
   `telephone` varchar(20) NOT NULL,
   `adresse` varchar(200) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -104,11 +104,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
 INSERT INTO `clients` (`id`, `nom`, `prenom`, `email`, `telephone`, `adresse`, `created_at`, `estAdmin`, `motDePasse`) VALUES
 (1, 'Durand', 'Jean', 'jean.durand@example.com', '06 12 34 56 78', '1 rue de la Paix', '2023-02-28 20:17:14', 0, ''),
 (2, 'Martin', 'Sophie', 'sophie.martin@example.com', '06 98 76 54 32', '14 avenue des Champs-Élysées', '2023-02-28 20:17:14', 0, ''),
-(3, 'Dupont', 'Pierre', 'pierre.dupont@example.com', '06 12 34 56 78', '23 rue du Faubourg Saint-Honoré', '2023-02-28 20:17:14', 0, ''),
-(4, 'Durand', 'Jean', 'jean.durand@example.com', '06 12 34 56 78', '1 rue de la Paix', '2023-02-28 20:18:04', 0, ''),
-(5, 'Martin', 'Sophie', 'sophie.martin@example.com', '06 98 76 54 32', '14 avenue des Champs-Élysées', '2023-02-28 20:18:04', 0, ''),
-(6, 'Dupont', 'Pierre', 'pierre.dupont@example.com', '06 12 34 56 78', '23 rue du Faubourg Saint-Honoré', '2023-02-28 20:18:04', 0, '');
-
+(3, 'Dupont', 'Pierre', 'pierre.dupont@example.com', '06 12 34 56 78', '23 rue du Faubourg Saint-Honoré', '2023-02-28 20:17:14', 0, '');
 -- --------------------------------------------------------
 
 --

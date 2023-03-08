@@ -147,7 +147,87 @@ switch($action)
                         header('Location: index.php?action=Panier');
                         break;
                     
-                
+                        case 'nouveauClient':
+                            require("Model/ClientPdo.php");
+                        
+                            // Récupération des données du formulaire
+                            $nom = $_POST['nom'];
+                            $prenom = $_POST['prenom'];
+                            $email = $_POST['email'];
+                            $telephone = $_POST['telephone'];
+                            $adresse = $_POST['adresse'];
+                            $motDePasse = $_POST['motDePasse'];
+                        
+                            // Vérification des entrées utilisateur
+                            $errors = array(
+                                'nom' => '',
+                                'prenom' => '',
+                                'email' => '',
+                                'telephone' => '',
+                                'adresse' => '',
+                                'motDePasse' => '',
+                                'confirmMotDePasse' => ''
+                              );
+                        
+                            // Vérification du nom
+                            if (empty($nom)) {
+                                $errors[] = "Le nom est obligatoire.";
+                            }
+                        
+                            // Vérification du prénom
+                            if (empty($prenom)) {
+                                $errors[] = "Le prénom est obligatoire.";
+                            }
+                        
+                            // Vérification de l'adresse e-mail
+                            if (empty($email)) {
+                                $errors[] = "L'adresse e-mail est obligatoire.";
+                            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                                $errors[] = "L'adresse e-mail n'est pas valide.";
+                            }
+                        
+                            // Vérification du numéro de téléphone
+                            if (empty($telephone)) {
+                                $errors[] = "Le numéro de téléphone est obligatoire.";
+                            } elseif (!preg_match("/^[0-9]{10}$/", $telephone)) {
+                                $errors[] = "Le numéro de téléphone n'est pas valide.";
+                            }
+                        
+                            // Vérification de l'adresse
+                            if (empty($adresse)) {
+                                $errors[] = "L'adresse est obligatoire.";
+                            }
+                        
+                            // Vérification du mot de passe
+                            if (empty($motDePasse)) {
+                                $errors[] = "Le mot de passe est obligatoire.";
+                            } elseif (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/", $motDePasse)) {
+                                $errors[] = "Le mot de passe doit contenir au moins 8 caractères, avec une combinaison de lettres minuscules, majuscules et chiffres.";
+                            }
+                            if (empty($confirmMotDePasse)) {
+                                $errors[] = "La confirmation du mot de passe est obligatoire.";
+                            } elseif ($motDePasse !== $confirmMotDePasse) {
+                                $errors[] = "Les mots de passe ne correspondent pas.";
+                            }
+                        
+                            if (empty($errors)) {
+                                // Hachage du mot de passe
+                                $motDePasseHash = password_hash($motDePasse, PASSWORD_DEFAULT);
+                        
+                                // Ajout du client dans la base de données
+                                ClientPdo::ajouterClient($nom, $prenom, $email, $telephone, $adresse, $motDePasseHash);
+                        
+                                // Redirection vers la page d'accueil
+                                header('Location: index.php');
+                                exit();
+                            } else {
+                        
+                                // Afficher le formulaire avec les erreurs
+                                require('Vues/register.php');
+                            }
+                            break;
+                        
+                        
         }        
 
    
