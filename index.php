@@ -29,6 +29,16 @@ switch($action)
     include("Vues/menus.php");
   
     break;
+    case 'register':
+        // vue qui crée le contenu de la page d’accueil
+        // require("Model/ClientPdo.php");
+       
+        // $menus = MenuPdo::getAllMenus();
+       
+      
+        include("Vues/register.php");
+      
+        break;
     case 'boissons':
         // vue qui crée le contenu de la page d’accueil
         
@@ -40,54 +50,125 @@ switch($action)
       
         break;
         case 'ajouterAuPanier':
-            // Vue qui crée le contenu de la page d’accueil
             require("Model/panier.php");
+            
         
-            // Vérifier si la variable de session 'panier' existe, sinon la créer
+            // check if the 'panier' session variable exists, if not create it as an empty array
             if (!isset($_SESSION['panier'])) {
                 $_SESSION['panier'] = array();
             }
         
-            $id_produit = null;
-            if (isset($_GET['menuid'])) {
-                $id_produit = $_GET['menuid'];
-            } else if (isset($_GET['boissonid'])) {
-                $id_produit = $_GET['boissonid'];
-            }
+            // check if the action is to add a menu to the panier
+            if (isset($_GET['action']) && $_GET['action'] == 'ajouterAuPanier' && isset($_GET['menuid'])) {
+                // get the menu ID from the GET parameter
+                $menuid = $_GET['menuid'];
         
-            if (!is_null($id_produit)) {
-                $quantite = 1; // Quantité du produit à ajouter
-                if (isset($_SESSION['panier'][$id_produit])) {
-                    // Si le produit est déjà dans le panier, on ajoute la quantité
-                    $_SESSION['panier'][$id_produit] += $quantite;
-                } else {
-                    // Sinon, on ajoute le produit avec sa quantité
-                    $_SESSION['panier'][$id_produit] = $quantite;
+                // check if the menu is already in the panier
+                $found = false;
+                foreach ($_SESSION['panier'] as &$item) {
+                    if ($item['type'] == 'menu' && $item['id'] == $menuid) {
+                        // increase the quantity of the existing menu in the panier
+                        $item['quantite'] += 1;
+                        $found = true;
+                        break;
+                    }
+                }
+                unset($item); // unset the reference to the last element
+        
+                // if the menu is not already in the panier, add it as a new entry
+                if (!$found) {
+                    $_SESSION['panier'][] = array(
+                        'type' => 'menu',
+                        'id' => $menuid,
+                        'quantite' => 1
+                    );
                 }
             }
-            header('Location: index.php?action=Panier');
-            break;
         
+            // check if the action is to add a drink to the panier
+            if (isset($_GET['action']) && $_GET['action'] == 'ajouterAuPanier' && isset($_GET['boissonid'])) {
+                // get the drink ID from the GET parameter
+                $boissonid = $_GET['boissonid'];
         
+                // check if the drink is already in the panier
+                $found = false;
+                foreach ($_SESSION['panier'] as &$item) {
+                    if ($item['type'] == 'boisson' && $item['id'] == $boissonid) {
+                        // increase the quantity of the existing drink in the panier
+                        $item['quantite'] += 1;
+                        $found = true;
+                        break;
+                    }
+                }
+                unset($item); // unset the reference to the last element
         
-        case 'Panier':
-            require("Model/MenuPdo.php");
-            $cart = $_SESSION['panier'];
-            $menuItems = array(); // An array to hold the menu item objects
-            foreach ($cart as $id => $quantity) {
-                $menuItem = MenuPdo::getMenuById($id); // Retrieve the menu item object from the database
-                var_dump($menuItem);
-                $menuItem->quantity = $quantity; // Add the quantity to the menu item object
-                $menuItems[] = $menuItem; // Add the menu item object to the array
-              
+                // if the drink is not already in the panier, add it as a new entry
+                if (!$found) {
+                    $_SESSION['panier'][] = array(
+                        'type' => 'boisson',
+                        'id' => $boissonid,
+                        'quantite' => 1
+                    );
+                }
             }
-            include("Vues/panier.php");
+        
+           
             break;
+        
+        
+        
+        
+            case 'Panier':
+                require("Model/MenuPdo.php");
+                require("Model/BoissonsPdo.php");
+                
+                $panier = $_SESSION['panier'];
+                
+                foreach ($panier as $item) {
+                    if ($item['type'] == 'menu') {
+                        $menu = MenuPdo::getMenuById($item['id']);
+                    } elseif ($item['type'] == 'boisson') {
+                        $boisson = BoissonsPdo::getBoissonById($item['id']);
+                    }
+                }
+                
+                include("Vues/panier.php");
+                break;
+            
+
             case 'Favoris':
-               
+                require("Model/MenuPdo.php");
+                $favorites = json_decode($_COOKIE['favorites'] ?? '[]', true);
+                $favoriteMenus = array();
+                foreach ($favorites as $id) {
+                    $menu = MenuPdo::getMenuById($id);
+                    if ($menu) {
+                        $favoriteMenus[] = $menu;
+                    }
+                }
                 include("Vues/favoris.php");
                 break;
+            
+                case 'ajouterAuxFavoris':
+                    $favorites = json_decode($_COOKIE['favorites'] ?? '[]', true);
+                    $menuId = $_GET['menuid'] ?? null;
+                    if ($menuId && !in_array($menuId, $favorites)) {
+                        $favorites[] = $menuId;
+                        setcookie('favorites', json_encode($favorites), time() + (86400 * 30), '/');
+                    }
+                    header('Location: index.php');
+                    break;
+
+                    case 'supprimerDuPanier':
+                        session_start();
+                        $key = $_POST['key'];
+                        unset($_SESSION['panier'][$key]);
+                        header('Location: index.php?action=Panier');
+                        break;
+                    
+                
         }        
 
    
         include("Includes/Pied.php");
+?>

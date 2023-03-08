@@ -37,7 +37,15 @@ class MenuPdo {
     public function setPrix($prix) {
         $this->nom = $prix;
     }
+ // Getter method for nom property
+ public function getDescription() {
+    return $this->description;
+}
 
+// Setter method for nom property
+public function setDescription($description) {
+    $this->nom = $description;
+}
     // Other methods...
 
 

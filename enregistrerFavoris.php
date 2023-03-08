@@ -1,23 +1,21 @@
 <?php
-// Récupérer les données de favoris envoyées via la requête AJAX
-$id = $_POST['id'];
-$nom = $_POST['nom'];
-$prix = $_POST['prix'];
+// Récupérer les données de favori envoyées via la requête AJAX
+$data = json_decode(file_get_contents("php://input"));
 
-// Créer un objet avec les données de favoris
+// Créer un objet avec les données de favori
 $favori = new stdClass();
-$favori->id = $id;
-$favori->nom = $nom;
-$favori->prix = $prix;
+$favori->id = $data->id;
+$favori->nom = $data->nom;
+$favori->prix = $data->prix;
 
 // Récupérer les favoris existants depuis le Local Storage
-$favoris = json_decode($_COOKIE['favoris']);
+$favoris = json_decode($_POST['favoris']) ?? [];
 
 // Ajouter le nouveau favori à la liste des favoris existants
 $favoris[] = $favori;
 
 // Enregistrer les favoris dans le Local Storage
-setcookie('favoris', json_encode($favoris), time() + (86400 * 30), "/");
+$_POST['favoris'] = json_encode($favoris);
 
 // Renvoyer une réponse JSON indiquant que l'enregistrement a réussi
 header('Content-Type: application/json');

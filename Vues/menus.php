@@ -1,3 +1,5 @@
+
+
 <h1>Nos menus</h1>
 <div class="menu-list">
 	<?php foreach ($menus as $menu) : ?>
@@ -6,7 +8,8 @@
 			<p><?= $menu->description ?></p>
 			<p><span>Prix:</span><?= $menu->prix ?></p>
 			<a href='./index.php?action=ajouterAuPanier&menuid=<?= $menu->id ?>'class="btn">Ajouter au panier</a>
-			<button onclick="ajouterEnFavori({id: <?= $menu->id ?>, nom: '<?= $menu->nom ?>', prix: <?= $menu->prix ?>})">Ajouter aux favoris</button>
+			<a href='./index.php?action=ajouterAuxFavoris&menuid=<?= $menu->id ?>'class="btn">Ajouter aux favoris</a>
 		</div>
 	<?php endforeach; ?>
 </div>
+
