@@ -88,7 +88,7 @@ class ClientPdo {
         }
     }
     
-    public static function ajouterClient($nom, $prenom, $email, $telephone, $adresse, $motDePasse) {
+    public static function ajouterClient($nom, $prenom, $email, $telephone, $numVoie,$libelleVoie,$codePostal,$ville, $motDePasse) {
         // Connexion à la base de données
         $pdo = PdoMusic::getPdoMusic()->getMonPdo();
         
@@ -96,14 +96,17 @@ class ClientPdo {
         $motDePasseHash = password_hash($motDePasse, PASSWORD_DEFAULT);
         
         // Préparation de la requête SQL avec les paramètres nommés
-        $stmt = $pdo->prepare("INSERT INTO clients (nom, prenom, email, telephone, adresse, motDePasse) VALUES (:nom, :prenom, :email, :telephone, :adresse, :motDePasse)");
+        $stmt = $pdo->prepare("INSERT INTO clients (nom, prenom, email, telephone, numVoie,libelleVoie,codePostal,ville, motDePasse) VALUES (:nom, :prenom, :email, :telephone, :numVoie,:libelleVoie,:codePostal,:ville, :motDePasse)");
         
         // Association des valeurs aux paramètres nommés
         $stmt->bindValue(':nom', $nom);
         $stmt->bindValue(':prenom', $prenom);
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':telephone', $telephone);
-        $stmt->bindValue(':adresse', $adresse);
+        $stmt->bindValue(':numVoie',$numVoie);
+        $stmt->bindValue(':libelleVoie',$libelleVoie);
+        $stmt->bindValue(':codePostal',$codePostal);
+        $stmt->bindValue(':ville',$ville);
         $stmt->bindValue(':motDePasse', $motDePasseHash);
         
         // Exécution de la requête préparée
