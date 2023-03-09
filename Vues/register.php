@@ -38,48 +38,85 @@ input[type="submit"]:hover {
   background-color: #0069d9;
 }
 </style>
+<!-- HTML form with JavaScript -->
 <form action="index.php?action=nouveauClient" method="post">
   <label for="nom">Nom:</label>
   <input type="text" id="nom" name="nom" required>
-  <?php if (isset($errors['nom'])): ?>
-    <p class="error"><?= $errors['nom'] ?></p>
-  <?php endif; ?>
-
+  
   <label for="prenom">Prenom:</label>
   <input type="text" id="prenom" name="prenom" required>
-  <?php if (isset($errors['prenom'])): ?>
-    <p class="error"><?= $errors['prenom'] ?></p>
-  <?php endif; ?>
-
+ 
   <label for="email">Email:</label>
   <input type="email" id="email" name="email" required>
-  <?php if (isset($errors['email'])): ?>
-    <p class="error"><?= $errors['email'] ?></p>
-  <?php endif; ?>
-
+  
   <label for="telephone">Telephone:</label>
   <input type="text" id="telephone" name="telephone" required>
-  <?php if (isset($errors['telephone'])): ?>
-    <p class="error"><?= $errors['telephone'] ?></p>
-  <?php endif; ?>
-
+ 
   <label for="adresse">Adresse:</label>
-  <input type="text" id="adresse" name="adresse" required>
-  <?php if (isset($errors['adresse'])): ?>
-    <p class="error"><?= $errors['adresse'] ?></p>
-  <?php endif; ?>
+  <input type="text" id="adresse" name="adresse" placeholder="Rechercher une adresse" autocomplete="off" required>
+  <div id="search-results"></div> <!-- Search results will be displayed here -->
+    <label for="numVoie">Numéro de voie:</label>
+  <input type="text" id="numVoie" name="numVoie" required>
 
+  <label for="libelleVoie">Libellé de voie:</label>
+  <input type="text" id="libelleVoie" name="libelleVoie" required>
+
+  <label for="codePostal">Code postal:</label>
+  <input type="text" id="codePostal" name="codePostal" required>
+
+  <label for="ville">Ville:</label>
+  <input type="text" id="ville" name="ville" required>
   <label for="motDePasse">Mot de passe:</label>
   <input type="password" id="motDePasse" name="motDePasse" required>
-  <?php if (isset($errors['motDePasse'])): ?>
-    <p class="error"><?= $errors['motDePasse'] ?></p>
-  <?php endif; ?>
-
+ 
   <label for="confirmMotDePasse">Confirmer le mot de passe:</label>
   <input type="password" id="confirmMotDePasse" name="confirmMotDePasse" required>
-  <?php if (isset($errors['confirmMotDePasse'])): ?>
-    <p class="error"><?= $errors['confirmMotDePasse'] ?></p>
-  <?php endif; ?>
-
+ 
   <input type="submit" value="S'inscrire">
+
+  <script>
+    const searchInput = document.getElementById('adresse');
+    const searchResults = document.getElementById('search-results');
+    
+    searchInput.addEventListener('input', () => {
+      const searchQuery = searchInput.value.trim();
+      if (searchQuery.length < 3) {
+        // If search query is less than 3 characters, don't make API request
+        searchResults.innerHTML = '';
+        return;
+      }
+      fetch(`https://api-adresse.data.gouv.fr/search/?q=${searchQuery}`)
+        .then(response => response.json())
+        .then(data => {
+          // Build HTML for search results
+          let html = '';
+          data.features.forEach(feature => {
+            const { name, postcode, city } = feature.properties;
+            html += `<div>${name}, ${postcode} ${city}</div>`;
+          });
+          searchResults.innerHTML = html;
+          searchResults.addEventListener('click', event => {
+  // Check if clicked element is a search result
+  if (event.target.matches('div')) {
+    // Get the selected feature from the API response data
+    const selectedFeature = data.features.find(feature => {
+      const { name, postcode, city } = feature.properties;
+      const searchResultText = `${name}, ${postcode} ${city}`;
+      return searchResultText === event.target.textContent;
+    });
+    // Extract and insert address values into form fields
+    const { housenumber, street, postcode, city } = selectedFeature.properties;
+    document.getElementById('numVoie').value = housenumber;
+    document.getElementById('libelleVoie').value = street;
+    document.getElementById('codePostal').value = postcode;
+    document.getElementById('ville').value = city;
+  }
+});
+        })
+        .catch(error => console.error(error));
+    });
+    // Add click event listener to search results container
+
+
+  </script>
 </form>

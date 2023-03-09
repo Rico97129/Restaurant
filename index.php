@@ -155,7 +155,10 @@ switch($action)
                             $prenom = $_POST['prenom'];
                             $email = $_POST['email'];
                             $telephone = $_POST['telephone'];
-                            $adresse = $_POST['adresse'];
+                            $adresse = $_POST['numVoie'];
+                            $adresse = $_POST['libelleVoie'];
+                            $adresse = $_POST['codePostal'];
+                            $adresse = $_POST['ville'];
                             $motDePasse = $_POST['motDePasse'];
                         
                             // Vérification des entrées utilisateur
@@ -215,7 +218,7 @@ switch($action)
                                 $motDePasseHash = password_hash($motDePasse, PASSWORD_DEFAULT);
                         
                                 // Ajout du client dans la base de données
-                                ClientPdo::ajouterClient($nom, $prenom, $email, $telephone, $adresse, $motDePasseHash);
+                                ClientPdo::ajouterClient($nom, $prenom, $email, $telephone, $numVoie,$libelleVoie,$codePostal,$ville, $motDePasse);
                         
                                 // Redirection vers la page d'accueil
                                 header('Location: index.php');
